@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN - Alpeada</title>
+    <%- include('partials/headlinks') %>
+</head>
+<body data-bs-theme="dark">
+    <main class="px-md-5 py-3 px-3">
+        <div class="px-lg-5">
+            <div class="px-lg-5">
+                <div class="d-flex"> 
+                    <h1 class="font-poppins fw-semibold ps-4">ADMIN PAGE</h1>
+                    <a href="/update" class="btn btn-warning ms-auto my-auto font-poppins fw-semibold">Update Users</a>
+                </div>
+
+                <div class="bg-secondary bg-opacity-25 rounded-3 my-3">
+                    <div class="p-4 container-fluid">
+                        <h3>Registered Users</h3>
+
+                        <div class="overflow-x-auto mt-3">
+                            <div class="myhistory4">
+                                <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                    <div class="col">First Name</div>
+                                    <div class="col">Last Name</div>
+                                    <div class="col">Email</div>
+                                    <div class="col">Password</div>
+                                    <div class="col">Number</div>
+                                    <div class="col">Date</div>
+                                    <div class="col">Delete</div>
+                                </div>
+        
+                                <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                    <% if (users.length > 0) { %>
+                                        <div class="container-fluid">
+                                            <% users.forEach(user =>{ %>
+                                                <div class="row text-center w-100 py-1">
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.firstName %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.lastName %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.email %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.password %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.number %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.date %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto text-center"><b>
+                                                        <form action="/delete/user" method="post">
+                                                            <input type="text" name="id" value="<%= user.id %>" class="d-none">
+                                                            <button type="submit" class="btn btn-warning px-2 py-0 fw-bold"><i class="ri-delete-bin-2-line"></i></button>
+                                                        </form>
+                                                    </b></div>
+                                                </div>
+                                            <% }) %> 
+                                        </div>
+                                    <% } else { %>
+                                        <div class="text-center">
+                                            <p class="mb-0">No Users found.....</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-secondary bg-opacity-25 rounded-3 my-5">
+                    <div class="p-4 container-fluid">
+                        <h3>Pending Deposits</h3>
+
+                        <div class="overflow-x-auto mt-3">
+                            <div class="myhistory1">
+                                <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                    <div class="col">Name</div>
+                                    <div class="col">Currency</div>
+                                    <div class="col">Amount</div>
+                                    <div class="col">Date</div>
+                                    <div class="col">Confrim</div>
+                                </div>
+        
+                                <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                    <% if (pendDeposits.length > 0) { %>
+                                        <div class="container-fluid">
+                                            <% pendDeposits.forEach(pendDeposit =>{ %>
+                                                <form action="/confirm/deposit" method="post">
+                                                    <div class="row text-center w-100 py-1">
+                                                        <div class="col text-nowrap overflow-x-auto"><b><%= pendDeposit.name %> </b></div>
+                                                        <input type="text" class="d-none" value="<%= pendDeposit.id %>" readonly name="id">
+                                                        <div class="col text-nowrap overflow-x-auto"><b><%= pendDeposit.coin %> </b></div>
+                                                        <div class="col text-nowrap overflow-x-auto"><b><%= pendDeposit.amount %> </b></div>
+                                                        <div class="col text-nowrap overflow-x-auto"><b><%= pendDeposit.date %> </b></div>
+                                                        <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-check-double-line"></i></button></b></div>
+                                                    </div>
+                                                </form>
+                                            <% }) %> 
+                                        </div>
+                                    <% } else { %>
+                                        <div class="text-center">
+                                            <p class="mb-0">No Pending Deposits.....</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="bg-secondary bg-opacity-25 rounded-3 my-5">
+                        <div class="p-4 container-fluid">
+                            <h3>Confirmed Deposits</h3>
+    
+                            <div class="overflow-x-auto mt-3">
+                                <div class="myhistory1">
+                                    <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                        <div class="col">Name</div>
+                                        <div class="col">Currency</div>
+                                        <div class="col">Amount</div>
+                                        <div class="col">Date</div>
+                                        <div class="col">Unconfrim</div>
+                                    </div>
+            
+                                    <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                        <% if (confirmDeposits.length > 0) { %>
+                                            <div class="container-fluid">
+                                                <% confirmDeposits.forEach(confirmDeposit =>{ %>
+                                                    <form action="/unconfirm/deposit" method="post">
+                                                        <div class="row text-center w-100 py-1">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmDeposit.name %> </b></div>
+                                                            <input type="text" class="d-none" value="<%= confirmDeposit.id %>" readonly name="id">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmDeposit.coin %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmDeposit.amount %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmDeposit.date %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-close-line"></i></button></b></div>
+                                                        </div>
+                                                    </form>
+                                                <% }) %> 
+                                            </div>
+                                        <% } else { %>
+                                            <div class="text-center">
+                                                <p class="mb-0">No Confrimed Deposits.....</p>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-secondary bg-opacity-25 rounded-3 my-5">
+                        <div class="p-4 container-fluid">
+                            <h3>Pending Withdrawals</h3>
+    
+                            <div class="overflow-x-auto mt-3">
+                                <div class="myhistory1">
+                                    <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                        <div class="col">Name</div>
+                                        <div class="col">Address</div>
+                                        <div class="col">Currency</div>
+                                        <div class="col">Amount</div>
+                                        <div class="col">Confrim</div>
+                                    </div>
+            
+                                    <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                        <% if (pendingWithdrawals.length > 0) { %>
+                                            <div class="container-fluid">
+                                                <% pendingWithdrawals.forEach(pendingWithdrawal =>{ %>
+                                                    <form action="/confirm/withdrawal" method="post">
+                                                        <div class="row text-center w-100 py-1">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.name %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.address %> </b></div>
+                                                            <input type="text" class="d-none" value="<%= pendingWithdrawal.id %>" readonly name="id">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.coin %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.amount %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-check-double-line"></i></button></div>
+                                                        </div>
+                                                    </form>
+                                                <% }) %> 
+                                            </div>
+                                        <% } else { %>
+                                            <div class="text-center">
+                                                <p class="mb-0">No Pending Withdrawals.....</p>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-secondary bg-opacity-25 rounded-3 my-5">
+                        <div class="p-4 container-fluid">
+                            <h3>Confirmed Withdrawals</h3>
+    
+                            <div class="overflow-x-auto mt-3">
+                                <div class="myhistory1">
+                                    <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                        <div class="col">Name</div>
+                                        <div class="col">Address</div>
+                                        <div class="col">Currency</div>
+                                        <div class="col">Amount</div>
+                                        <div class="col">Unconfrim</div>
+                                    </div>
+            
+                                    <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                        <% if (confirmWithdrawals.length > 0) { %>
+                                            <div class="container-fluid">
+                                                <% confirmWithdrawals.forEach(confirmWithdrawal =>{ %>
+                                                    <form action="/unconfirm/withdrawal" method="post">
+                                                        <div class="row text-center w-100 py-1">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmWithdrawal.name %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmWithdrawal.address %> </b></div>
+                                                            <input type="text" class="d-none" value="<%= confirmWithdrawal.id %>" readonly name="id">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmWithdrawal.coin %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= confirmWithdrawal.amount %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-close-line"></i></button></div>
+                                                        </div>
+                                                    </form>
+                                                <% }) %> 
+                                            </div>
+                                        <% } else { %>
+                                            <div class="text-center">
+                                                <p class="mb-0">No Confirmed Withdrawals.....</p>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
