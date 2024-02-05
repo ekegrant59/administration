@@ -43,9 +43,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/adminregister', (req,res)=>{
-    res.render('adminregister')
-})
+// app.get('/adminregister', (req,res)=>{
+//     res.render('adminregister')
+// })
 
 
 app.post('/adminregister', async(req,res)=>{
