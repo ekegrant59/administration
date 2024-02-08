@@ -12,7 +12,6 @@ const balanceSchema = require('./schema/balanceSchema')
 const depositSchema = require('./schema/depositSchema')
 const withdrawSchema = require('./schema/withdrawSchema')
 const botSchema = require('./schema/botSchema')
-const cron = require('node-cron');
 
 const adminkey = process.env.ADMINKEY
 const secretkey = process.env.SECRETKEY
