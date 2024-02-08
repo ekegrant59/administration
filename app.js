@@ -206,7 +206,6 @@ app.post('/adminregister', async(req,res)=>{
                         console.log(`BotID updated for ${email}`)
                     }
                 })
-                //   cron.schedule('*/2 * * * *', () => {bot(email)});
               } else if (balance > 0 && deposit >0 && bot){
                 console.log(`Bot Active for ${email}`)
               } else{
