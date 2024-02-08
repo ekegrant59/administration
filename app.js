@@ -11,6 +11,8 @@ const userschema = require('./schema/userSchema')
 const balanceSchema = require('./schema/balanceSchema')
 const depositSchema = require('./schema/depositSchema')
 const withdrawSchema = require('./schema/withdrawSchema')
+const botSchema = require('./schema/botSchema')
+const cron = require('node-cron');
 
 const adminkey = process.env.ADMINKEY
 const secretkey = process.env.SECRETKEY
@@ -153,7 +155,7 @@ app.post('/adminregister', async(req,res)=>{
   app.get('/update',protectAdminRoute, (req,res)=>{
       res.render('adminUpdate')
   })
-  
+
   app.get('/edit/:id', async (req,res)=>{
       let email = req.params.id 
       // console.log(username)
@@ -167,8 +169,9 @@ app.post('/adminregister', async(req,res)=>{
       }
   })
   
-  app.post('/edit', (req,res)=>{
+  app.post('/edit', async (req,res)=>{
       const details = req.body
+      const email = details.email
       const filter = {email: details.email}
       balanceSchema.findOneAndUpdate(filter, {$set: {balance: details.balance, deposit: details.deposit, withdrawal: details.withdrawal, profit: details.profit}}, {new: true}, (err,dets)=>{
           if (err){
@@ -178,10 +181,168 @@ app.post('/adminregister', async(req,res)=>{
           } else{
               req.flash('success', 'User Account Updated Successfully')
               res.redirect('/update')
+            //   console.log(dets)
+                let balance = dets.balance
+                let deposit = dets.deposit
+                let bot = dets.bot
+                let botID
+              if(balance > 0 && deposit >0 && !(bot)){
+                balanceSchema.findOneAndUpdate(filter, {$set: {bot: true}}, {new: true}, (err)=>{
+                    if(err){
+                        console.log(err)
+                    }
+                })
+                botTnx(email)
+                console.log(`Bot started for ${email}`)
+                botID = setInterval(() => { 
+                    botTnx(email);
+                    console.log(`Bot started again for ${email}`)
+                   }, 1000 * 60 * 60 * 24); 
+                // console.log(botID[Symbol.toPrimitive]())
+                let botID2 = botID[Symbol.toPrimitive]()
+                balanceSchema.findOneAndUpdate(filter, {$set: {botID: botID2}}, {new: true}, (err)=>{
+                    if(err){
+                        console.log(err)
+                    } else{
+                        console.log(`BotID updated for ${email}`)
+                    }
+                })
+                //   cron.schedule('*/2 * * * *', () => {bot(email)});
+              } else if (balance > 0 && deposit >0 && bot){
+                console.log(`Bot Active for ${email}`)
+              } else{
+                console.log(`Insufficient balance for ${email}`)
+              }
           }
       })
   
   })
+
+  app.post('/endBot', async (req,res)=>{
+    let details = req.body
+    let email = details.email
+    const filter = {email: details.email}
+    let theuser = await balanceSchema.findOne({email: email})
+    let botIntervalID = theuser.botID
+    // console.log(botIntervalID)
+    clearInterval(botIntervalID)
+    balanceSchema.findOneAndUpdate(filter, {$set: {bot: false}}, {new: true}, (err)=>{
+        if(err){
+            console.log(err)
+        }
+    })
+    req.flash('success', `Bot Stopped for ${email}`)
+    res.redirect('/')
+  })
+
+  async function botTnx(email){
+    let tradesCount = 0;
+    while ( tradesCount < 6) {
+        try {
+            let theuser = await balanceSchema.findOne({email: email})
+            let balance = theuser.balance
+            let profit = theuser.profit
+            let newBalance, newProfit
+            const btcPrice = await getBTCPriceWithRetry()
+            const currentDate = new Date();
+            const formattedDateTime = currentDate.toLocaleString();
+            // generateAmount(email)
+            const amount = await generateAmount(email)
+            if(btcPrice != null){
+                // console.log(`BTC Price: ${btcPrice}`)
+                // console.log(`Bot started for ${email}`)
+                // console.log(`Time: ${formattedDateTime}`)
+                // console.log(`Amount : ${amount}`)
+
+                const isBuyTransaction = Math.random() < 0.5;
+                const isLossTransaction = Math.random() < 0.15;
+                const txnDurationRatio = Math.random()
+
+                let transactionType = isBuyTransaction ? 'Buy' : 'Sell'
+                let isLoss = isLossTransaction ? true : false
+
+                const bot = new botSchema({
+                    email: email,
+                    btcPrice: btcPrice,
+                    time: formattedDateTime,
+                    amount: amount,
+                    type: transactionType,
+                    loss: isLoss
+                })
+                await bot.save()
+
+                if (isLoss){
+                    newBalance = balance - parseFloat(amount)
+                    newProfit = profit - parseFloat(amount)
+                    newBalance = newBalance.toFixed(2)
+                    newProfit = newProfit.toFixed(2)
+                } else{
+                    newBalance = balance + parseFloat(amount)
+                    newProfit = profit + parseFloat(amount)
+                    newBalance = newBalance.toFixed(2)
+                    newProfit = newProfit.toFixed(2)
+                }
+
+                balanceSchema.findOneAndUpdate({email: email}, {$set: {balance: newBalance, profit: newProfit}}, {new: true}, (err,dets)=>{
+                    if (err){
+                        console.log(err)
+                    }
+                })
+
+                // console.log(transactionType)
+                // console.log(isLoss)
+                tradesCount++
+                await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 2 * txnDurationRatio));
+            } else{
+                console.log("Failed to fetch BTC price. Skipping transaction.");
+            }
+        } catch (error) {
+            console.error('Error in bot:', error);
+        }
+    }
+    console.log("Maximum number of trades reached for the day.");
+  }
+
+  async function getBTCPriceWithRetry(maxRetries = 3) {
+    let retries = 0;
+
+    while (retries < maxRetries) {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            const data = await response.json();
+            
+            // Extract the BTC price from the response
+            const btcPrice = data.bitcoin.usd;
+            
+            return btcPrice;
+        } catch (error) {
+            console.error('Error fetching BTC price:', error);
+
+            // Increment the retry count
+            retries++;
+
+            // Add a delay before retrying (adjust as needed)
+            await new Promise(resolve => setTimeout(resolve, 10000));
+        }
+    }
+    // If max retries reached without success, return null or throw an error
+    console.error(`Failed to fetch BTC price after ${maxRetries} retries.`);
+    return null;
+  }
+
+  async function generateAmount(email){
+    let theuser = await balanceSchema.findOne({email: email})
+    let deposit = theuser.deposit
+    // console.log(theuser)
+    let twoPercent = deposit * 0.02;
+
+    function getRandomNumber() {
+        return Math.random();
+    }
+
+    const randomValue = getRandomNumber() * twoPercent;
+    return randomValue.toFixed(2)
+  }
   
   app.post('/confirm/deposit', (req,res)=>{
       const body = req.body
@@ -252,7 +413,9 @@ app.post('/adminregister', async(req,res)=>{
       const filter = {_id: body.id}
   
       let user = userschema.findOne(filter)
-      let email = user.email
+      let theemail = user.email
+
+      const filter2 = {email: theemail}
   
       userschema.deleteOne(filter).then(function(){
           console.log("User deleted"); // Success
@@ -260,11 +423,17 @@ app.post('/adminregister', async(req,res)=>{
           console.log(error); // Failure
       });
   
-      balanceSchema.deleteOne({email: email}).then(function(){
+      balanceSchema.deleteOne(filter2).then(function(){
           console.log("User Balance deleted"); // Success
       }).catch(function(error){
           console.log(error); // Failure
       });
+
+      botSchema.deleteMany(filter2).then(function(){
+            console.log("User Bot Txns deleted"); // Success
+        }).catch(function(error){
+            console.log(error); // Failure
+        });
   
       res.redirect('/')
   })
