@@ -271,9 +271,14 @@ footer a:hover{
     width: max-content;
 }
 .myhistory4{
-    width: max-content;
+    width: 100%
 }
 
+@media screen and (max-width : 1200px){
+    .myhistory4{
+        width: max-content
+    }
+}
 @media screen and (max-width : 576px){
     .hero3{
         width: 450px;
