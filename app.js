@@ -191,8 +191,10 @@ app.post('/adminregister', async(req,res)=>{
                         console.log(err)
                     }
                 })
-                botTnx(email)
-                console.log(`Bot started for ${email}`)
+                setTimeout(() => { 
+                    botTnx(email);
+                    console.log(`Bot started for ${email}`)
+                   }, 1000 * 60 * 10); 
                 botID = setInterval(() => { 
                     botTnx(email);
                     console.log(`Bot started again for ${email}`)
@@ -253,7 +255,7 @@ app.post('/adminregister', async(req,res)=>{
                 // console.log(`Amount : ${amount}`)
 
                 const isBuyTransaction = Math.random() < 0.5;
-                const isLossTransaction = Math.random() < 0.15;
+                const isLossTransaction = Math.random() < 0.1;
                 const txnDurationRatio = Math.random()
 
                 let transactionType = isBuyTransaction ? 'Buy' : 'Sell'
@@ -290,7 +292,7 @@ app.post('/adminregister', async(req,res)=>{
                 // console.log(transactionType)
                 // console.log(isLoss)
                 tradesCount++
-                await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 2 * txnDurationRatio));
+                await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 3 * txnDurationRatio));
             } else{
                 console.log("Failed to fetch BTC price. Skipping transaction.");
             }
