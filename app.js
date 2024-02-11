@@ -255,10 +255,10 @@ app.post('/adminregister', async(req,res)=>{
                 // console.log(`Amount : ${amount}`)
 
                 const isBuyTransaction = Math.random() < 0.5;
-                const isLossTransaction = Math.random() < 0.1;
+                const isLossTransaction = Math.random() < 0.13;
                 const txnDurationRatio = Math.random()
 
-                let transactionType = isBuyTransaction ? 'Buy' : 'Sell'
+                let transactionType = isBuyTransaction ? 'buy' : 'sell'
                 let isLoss = isLossTransaction ? true : false
 
                 const bot = new botSchema({
@@ -292,7 +292,7 @@ app.post('/adminregister', async(req,res)=>{
                 // console.log(transactionType)
                 // console.log(isLoss)
                 tradesCount++
-                await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 3 * txnDurationRatio));
+                await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 4 * txnDurationRatio));
             } else{
                 console.log("Failed to fetch BTC price. Skipping transaction.");
             }
