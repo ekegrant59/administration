@@ -28,6 +28,7 @@
                                     <div class="col">Password</div>
                                     <div class="col">Number</div>
                                     <div class="col">Date</div>
+                                    <div class="col">Referral</div>
                                     <div class="col">Delete</div>
                                 </div>
         
@@ -42,6 +43,7 @@
                                                     <div class="col text-nowrap overflow-x-auto"><b><%= user.password %> </b></div>
                                                     <div class="col text-nowrap overflow-x-auto"><b><%= user.number %> </b></div>
                                                     <div class="col text-nowrap overflow-x-auto"><b><%= user.date %> </b></div>
+                                                    <div class="col text-nowrap overflow-x-auto"><b><%= user.refferal %> </b></div>
                                                     <div class="col text-nowrap overflow-x-auto text-center"><b>
                                                         <form action="/delete/user" method="post">
                                                             <input type="text" name="id" value="<%= user.id %>" class="d-none">
