@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     encryptedpassword: String,
     number: String,
     date: String,
-    refferal: String
+    kyc: { type: mongoose.Schema.Types.ObjectId, ref: 'kyc', required: true }
 })
 
 module.exports = mongoose.model('user', userSchema)

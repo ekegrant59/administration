@@ -12,6 +12,7 @@ const balanceSchema = require('./schema/balanceSchema')
 const depositSchema = require('./schema/depositSchema')
 const withdrawSchema = require('./schema/withdrawSchema')
 const botSchema = require('./schema/botSchema')
+const kycSchema = require('./schema/kycSchema')
 
 const adminkey = process.env.ADMINKEY
 const secretkey = process.env.SECRETKEY
@@ -83,7 +84,7 @@ app.post('/adminregister', async(req,res)=>{
 
   app.get('/',protectAdminRoute, async (req,res)=>{
     try{
-        const user = await userschema.find()
+        const user = await userschema.find().populate('kyc')
         const pendDeposit = await depositSchema.find({status: 'Pending'})
         const confirmDeposit = await depositSchema.find({status: 'Completed'})
         const pendingwithdrawal = await withdrawSchema.find({status: 'Pending'})
@@ -245,7 +246,7 @@ app.post('/adminregister', async(req,res)=>{
             let newBalance, newProfit
             const btcPrice = await getBTCPriceWithRetry()
             const currentDate = new Date();
-            const formattedDateTime = currentDate.toLocaleString();
+            const formattedDateTime = currentDate.toLocaleDateString();
             // generateAmount(email)
             const amount = await generateAmount(email)
             if(btcPrice != null){
@@ -429,7 +430,7 @@ app.post('/adminregister', async(req,res)=>{
           console.log(error); // Failure
       });
 
-      botSchema.deleteMany(filter2).then(function(){
+      botSchema.deleteOne(filter2).then(function(){
             console.log("User Bot Txns deleted"); // Success
         }).catch(function(error){
             console.log(error); // Failure
@@ -437,7 +438,23 @@ app.post('/adminregister', async(req,res)=>{
   
       res.redirect('/')
   })
+
+  app.get('/kyc/:id', async(req,res)=>{
+    const id = req.params.id
+    const user = await userschema.findOne({_id:id}).populate('kyc')
+    res.render('kyc', {theuser: user})
+  })
   
+  app.post('/verifyKYC', async(req,res)=>{
+    const {id} = req.body
+    const filter = {_id: id}
+    kycSchema.findOneAndUpdate(filter, {$set: {status: 'Verified'}}, {new: true}, (err)=>{
+        if(err){
+            console.log(err)
+        }
+    })
+    res.redirect('back')
+  })
   
   const port = process.env.PORT || 3000
   

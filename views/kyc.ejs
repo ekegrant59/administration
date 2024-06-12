@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN - Alpeada</title>
+    <%- include('partials/headlinks') %>
+</head>
+<body>
+    <main class="px-md-5 py-3 px-3">
+        <div class="px-lg-5">
+            <div class="px-lg-5">
+                <div class="d-flex"> 
+                    <h1 class="font-poppins fw-semibold ps-4 text-light"><%= theuser.firstName %> <%= theuser.lastName %> KYC Information</h1>
+                    <a href="/" class="btn btn-warning ms-auto my-auto font-poppins fw-semibold">View Users</a>
+                </div>
+
+                <div class="bg-secondary bg-opacity-25 rounded-3 my-4 col-12 col-md-8 mx-auto">
+                    <% if(theuser.kyc) {%>
+                        <div class="p-4 text-light">
+                            <p class="h5">Full Name: <b class="h4 fw-bold"><%= theuser.kyc.fullname %></b></p>
+                            <p class="h5">ID Type: <b class="h4 fw-bold"><%= theuser.kyc.idtype %></b></p>
+                            <p class="h5">Country: <b class="h4 fw-bold"><%= theuser.kyc.country %></b></p>
+                            <p class="h5">Verification Status: <b class="h4 fw-bold"><%= theuser.kyc.status %></b></p>
+
+                            <div class="mt-5">
+                                <p class="h5">Front Page:</p>
+                                <img src="<%= theuser.kyc.front %>" alt="" style="width: 400px; height: 300px;">
+                            </div>
+                            <div class="mt-5" >
+                                <p class="h5">Back Page:</p>
+                                <img src="<%= theuser.kyc.back %>" alt="" style="width: 400px;  height: 300px;">
+                            </div>
+
+                        </div>
+                        <div class="p-5">
+
+                            <form action="/verifyKYC" method="post">
+                                <input type="text" name="id" id="id" value="<%= theuser.kyc.id %>" class="d-none">
+                                <button class="btn btn-warning px-3 py-1 fw-bold h4" type="submit">Verify</i></button>
+                            </form>
+                        </div>
+                    <% }else{ %>
+                        <p class="h3 text-light text-center py-5">No KYC Info</p>
+                    <% } %>
+
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
