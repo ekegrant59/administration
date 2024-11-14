@@ -170,6 +170,7 @@
                                         <div class="col">Currency</div>
                                         <div class="col">Amount</div>
                                         <div class="col">Confrim</div>
+                                        <div class="col">Fail</div>
                                     </div>
             
                                     <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
@@ -184,6 +185,7 @@
                                                             <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.coin %> </b></div>
                                                             <div class="col text-nowrap overflow-x-auto"><b><%= pendingWithdrawal.amount %> </b></div>
                                                             <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-check-double-line"></i></button></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit" formaction="/failed/withdrawal"><i class="ri-close-line"></i></button></div>
                                                         </div>
                                                     </form>
                                                 <% }) %> 
@@ -232,6 +234,47 @@
                                         <% } else { %>
                                             <div class="text-center">
                                                 <p class="mb-0">No Confirmed Withdrawals.....</p>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-secondary bg-opacity-25 rounded-3 my-5">
+                        <div class="p-4 container-fluid">
+                            <h3>Failed Withdrawals</h3>
+    
+                            <div class="overflow-x-auto mt-3">
+                                <div class="myhistory1">
+                                    <div class="row myhistory text-center py-2 border border-1 rounded-1 border-secondary-subtle">
+                                        <div class="col">Name</div>
+                                        <div class="col">Address</div>
+                                        <div class="col">Currency</div>
+                                        <div class="col">Amount</div>
+                                        <div class="col">UnConfrim</div>
+                                    </div>
+            
+                                    <div class="thehistory py-2 overflow-y-auto" style="max-height: 400px;">
+                                        <% if (failedwithdrawals.length > 0) { %>
+                                            <div class="container-fluid">
+                                                <% failedwithdrawals.forEach(failedwithdrawal =>{ %>
+                                                    <form action="/unconfirm/withdrawal" method="post">
+                                                        <div class="row text-center w-100 py-1">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= failedwithdrawal.name %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= failedwithdrawal.address %> </b></div>
+                                                            <input type="text" class="d-none" value="<%= failedwithdrawal.id %>" readonly name="id">
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= failedwithdrawal.coin %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><b><%= failedwithdrawal.amount %> </b></div>
+                                                            <div class="col text-nowrap overflow-x-auto"><button class="btn btn-warning px-2 py-0 fw-bold" type="submit"><i class="ri-close-line"></i></button></div>
+                                                        </div>
+                                                    </form>
+                                                <% }) %> 
+                                            </div>
+                                        <% } else { %>
+                                            <div class="text-center">
+                                                <p class="mb-0">No Failed Withdrawals.....</p>
                                             </div>
                                         <% } %>
                                     </div>

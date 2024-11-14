@@ -90,7 +90,7 @@ app.post('/adminregister', async(req,res)=>{
         const pendingwithdrawal = await withdrawSchema.find({status: 'Pending'})
         const confirmwithdrawal = await withdrawSchema.find({status: 'Completed'})
         const failedwithdrawal = await withdrawSchema.find({status: 'Failed'})
-        res.render('admin', {users: user, pendDeposits: pendDeposit, confirmDeposits: confirmDeposit, confirmWithdrawals: confirmwithdrawal, pendingWithdrawals: pendingwithdrawal, failedwithdrawals:failedwithdrawal })
+        res.render('admin', {users: user, pendDeposits: pendDeposit, confirmDeposits: confirmDeposit, confirmWithdrawals: confirmwithdrawal, pendingWithdrawals: pendingwithdrawal, failedwithdrawals: failedwithdrawal })
     } catch(err){
         console.log(err)
     }
@@ -369,7 +369,7 @@ app.post('/adminregister', async(req,res)=>{
       res.redirect('/')
   })
   
-  app.post('/confirm/withdrawal', (req,res)=>{
+  app.post('/confirm/withdrawal', async (req,res)=>{
       const body = req.body
       // console.log(body.transactID)
       // console.log(body.id)
@@ -382,10 +382,10 @@ app.post('/adminregister', async(req,res)=>{
       res.redirect('/')
   })
   
-  app.post('/failed/withdrawal', (req,res)=>{
+  app.post('/failed/withdrawal', async (req,res)=>{
       const body = req.body
       // console.log(body.transactID)
-      // console.log(body.id)
+    //   console.log(body.id)
       const filter = {_id: body.id}
       withdrawSchema.findOneAndUpdate(filter, {$set: {status: 'Failed'}}, {new: true}, (err)=>{
           if(err){
