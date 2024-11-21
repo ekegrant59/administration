@@ -236,6 +236,73 @@ app.post('/adminregister', async(req,res)=>{
     res.redirect('/')
   })
 
+  app.post('/addBot', async (req,res)=>{
+    let {amount, type, loss, email} = req.body
+    // console.log(amount, type, loss, email)
+    
+    try {
+        let theuser = await balanceSchema.findOne({email: email})
+        let balance = theuser.balance
+        let profit = theuser.profit
+        let newBalance, newProfit
+        const btcPrice = await getBTCPriceWithRetry()
+        const currentDate = new Date();
+        const formattedDateTime = currentDate.toLocaleDateString();
+
+        if(btcPrice != null){
+            // console.log(`BTC Price: ${btcPrice}`)
+            // console.log(`Bot started for ${email}`)
+            // console.log(`Time: ${formattedDateTime}`)
+            // console.log(`Amount : ${amount}`)
+
+            let isLoss = loss == 'true' ? true : false
+
+            const bot = new botSchema({
+                email: email,
+                btcPrice: btcPrice,
+                time: formattedDateTime,
+                amount: amount,
+                type: type,
+                loss: isLoss
+            })
+            await bot.save()
+
+            if (isLoss){
+                newBalance = balance - parseFloat(amount)
+                newProfit = profit - parseFloat(amount)
+                newBalance = newBalance.toFixed(2)
+                newProfit = newProfit.toFixed(2)
+            } else{
+                newBalance = balance + parseFloat(amount)
+                newProfit = profit + parseFloat(amount)
+                newBalance = newBalance.toFixed(2)
+                newProfit = newProfit.toFixed(2)
+            }
+
+            balanceSchema.findOneAndUpdate({email: email}, {$set: {balance: newBalance, profit: newProfit}}, {new: true}, (err,dets)=>{
+                if (err){
+                    console.log(err)
+                    req.flash('danger', 'An Error Occured, Please try again')
+                    res.redirect('/update')
+                } else{
+                    req.flash('success', 'Bot Transaction added succesfully!')
+                    res.redirect('/update')
+                }
+            })
+
+        } else{
+            console.log("Failed to fetch BTC price. Skipping transaction.");
+            req.flash('danger', 'An Error Occured, Please try again')
+            res.redirect('/update')
+        }        
+    } catch (error) {
+        console.log('Error in adding bot transaction:', error)
+        req.flash('danger', 'An Error Occured, Please try again')
+        res.redirect('/update')
+    }
+
+  })
+
   async function botTnx(email){
     let tradesCount = 0;
     while ( tradesCount < 6) {
@@ -369,7 +436,7 @@ app.post('/adminregister', async(req,res)=>{
       res.redirect('/')
   })
   
-  app.post('/confirm/withdrawal', async (req,res)=>{
+  app.post('/confirm/withdrawal', (req,res)=>{
       const body = req.body
       // console.log(body.transactID)
       // console.log(body.id)
@@ -382,7 +449,7 @@ app.post('/adminregister', async(req,res)=>{
       res.redirect('/')
   })
   
-  app.post('/failed/withdrawal', async (req,res)=>{
+  app.post('/failed/withdrawal', (req,res)=>{
       const body = req.body
       // console.log(body.transactID)
     //   console.log(body.id)

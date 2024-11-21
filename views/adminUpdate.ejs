@@ -68,6 +68,36 @@
                                 <div class="my-3 text-center">
                                     <button class="btn btn-warning btn-lg" type="submit">UPDATE</button>
                                 </div>
+
+
+                                <p class="fs-3">Add Bot Transaction</p>
+                                <div class="mb-md-3 row">
+                                    <label for="inputAMount" class="col-sm-3 col-form-label">Amount:</label>
+                                    <div class="col-sm-9">
+                                      <input type="text"  class="form-control" id="inputAMount" name="amount" required>
+                                    </div>
+                                </div>
+                                <div class="mb-md-3 row form-group">
+                                    <label for="inputType" class="col-sm-3 col-form-label">Trade type:</label>
+                                    <div class="col-sm-9">
+                                      <select class="form-control" id="inputType" name="type" >
+                                        <option value="buy">Buy</option>
+                                        <option value="sell">Sell</option>
+                                      </select>
+                                    </div>
+                                </div>
+                                <div class="mb-md-3 row">
+                                    <label for="inputLoss" class="col-sm-3 col-form-label">Loss:</label>
+                                    <div class="col-sm-9">
+                                      <select class="form-control" id="inputLoss" name="loss" >
+                                        <option value="true">true</option>
+                                        <option value="false" selected>false</option>
+                                      </select>
+                                    </div>
+                                </div>
+                                <div class="my-3 text-center">
+                                    <button class="btn btn-warning btn-lg" type="submit" formaction="/addBot">SUBMIT</button>
+                                </div>
                             </div>
                         </form>
                     </div>
